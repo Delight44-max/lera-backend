@@ -4,7 +4,7 @@ services:
     runtime: java
     buildCommand: ./mvnw clean package -DskipTests
     startCommand: java -jar target/lera-backend.jar
-    healthCheckPath: /health
+    healthCheckPath: /api/v1/health
     envVars:
       - key: PORT
         value: 8080
