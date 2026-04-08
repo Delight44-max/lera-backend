@@ -1,43 +1,31 @@
 services:
   - type: web
     name: lera-backend
-    runtime: java
-    buildCommand: ./mvnw clean package -DskipTests
-    startCommand: java -jar target/lera-backend.jar
+    runtime: docker
+    dockerfilePath: ./Dockerfile
     healthCheckPath: /api/v1/health
     envVars:
       - key: PORT
         value: 8080
-
       - key: SOCKETIO_PORT
         value: 9092
-
       - key: DDL_AUTO
         value: update
-
-
       - key: JWT_SECRET
         generateValue: true
-
       - key: JWT_ACCESS_EXPIRATION_MS
         value: 900000
-
       - key: REFRESH_TOKEN_EXPIRATION_MS
         value: 604800000
-
-
       - key: DATABASE_URL
         fromDatabase:
           name: lera-db
           property: connectionString
-
-
       - key: CORS_ORIGINS
         value: http://localhost:3000,http://localhost:3001,https://lera-frontend.vercel.app
-
-
       - key: FIREBASE_SERVICE_ACCOUNT_JSON
         value: ""
+
 databases:
   - name: lera-db
     databaseName: lera_db
