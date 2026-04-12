@@ -55,6 +55,7 @@ public class SecurityConfig {
                             "/api/v1/health",
                             "/manifest.json",
                             "/favicon.ico").permitAll()
+                    .requestMatchers("/socket.io/**").permitAll()
                     .requestMatchers(HttpMethod.PATCH, "/api/v1/auth/me/fcm-token").authenticated()
 
                     .requestMatchers(AntPathRequestMatcher.antMatcher(HttpMethod.GET,"/**/*.png"),
