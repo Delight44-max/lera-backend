@@ -44,9 +44,14 @@ public class SocketIOProxyConfig {
                 conn.setConnectTimeout(5000);
                 conn.setReadTimeout(30000);
 
-                // Forward headers
-                req.getHeaderNames().asIterator().forEachRemaining(name ->
-                        conn.setRequestProperty(name, req.getHeader(name)));
+                // Forward headers (skip CORS headers — Spring Security handles these)
+                req.getHeaderNames().asIterator().forEachRemaining(name -> {
+                    if (!name.equalsIgnoreCase("origin") &&
+                            !name.equalsIgnoreCase("access-control-request-method") &&
+                            !name.equalsIgnoreCase("access-control-request-headers")) {
+                        conn.setRequestProperty(name, req.getHeader(name));
+                    }
+                });
 
                 // Forward body
                 if ("POST".equalsIgnoreCase(req.getMethod())) {
@@ -56,10 +61,16 @@ public class SocketIOProxyConfig {
                     }
                 }
 
-                // Write response
+                // Write response (skip CORS headers from Socket.IO — Spring Security handles these)
                 res.setStatus(conn.getResponseCode());
                 conn.getHeaderFields().forEach((key, values) -> {
-                    if (key != null) values.forEach(v -> res.addHeader(key, v));
+                    if (key != null &&
+                            !key.equalsIgnoreCase("access-control-allow-origin") &&
+                            !key.equalsIgnoreCase("access-control-allow-credentials") &&
+                            !key.equalsIgnoreCase("access-control-allow-methods") &&
+                            !key.equalsIgnoreCase("access-control-allow-headers")) {
+                        values.forEach(v -> res.addHeader(key, v));
+                    }
                 });
 
                 InputStream responseStream = conn.getResponseCode() >= 400
