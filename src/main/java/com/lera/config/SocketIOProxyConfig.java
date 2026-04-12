@@ -35,6 +35,19 @@ public class SocketIOProxyConfig {
                     return;
                 }
 
+                // ✅ Handle CORS preflight
+                if ("OPTIONS".equalsIgnoreCase(req.getMethod())) {
+                    String origin = req.getHeader("Origin");
+                    if (origin != null) {
+                        res.setHeader("Access-Control-Allow-Origin", origin);
+                        res.setHeader("Access-Control-Allow-Credentials", "true");
+                        res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+                        res.setHeader("Access-Control-Allow-Headers", "*");
+                    }
+                    res.setStatus(HttpServletResponse.SC_OK);
+                    return;
+                }
+
                 String query = req.getQueryString();
                 String targetUrl = "http://localhost:" + socketioPort + uri + (query != null ? "?" + query : "");
 
@@ -44,7 +57,7 @@ public class SocketIOProxyConfig {
                 conn.setConnectTimeout(5000);
                 conn.setReadTimeout(30000);
 
-                // Forward headers (skip CORS headers — Spring Security handles these)
+                // Forward headers (skip CORS headers — we handle them manually)
                 req.getHeaderNames().asIterator().forEachRemaining(name -> {
                     if (!name.equalsIgnoreCase("origin") &&
                             !name.equalsIgnoreCase("access-control-request-method") &&
@@ -61,7 +74,16 @@ public class SocketIOProxyConfig {
                     }
                 }
 
-                // Write response (skip CORS headers from Socket.IO — Spring Security handles these)
+                // ✅ Add CORS headers manually
+                String origin = req.getHeader("Origin");
+                if (origin != null) {
+                    res.setHeader("Access-Control-Allow-Origin", origin);
+                    res.setHeader("Access-Control-Allow-Credentials", "true");
+                    res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+                    res.setHeader("Access-Control-Allow-Headers", "*");
+                }
+
+                // Write response (skip CORS headers from Socket.IO — we added our own)
                 res.setStatus(conn.getResponseCode());
                 conn.getHeaderFields().forEach((key, values) -> {
                     if (key != null &&
