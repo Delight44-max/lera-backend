@@ -85,7 +85,7 @@ public class SocketIOProxyConfig {
         });
 
         reg.addUrlPatterns("/socket.io/*");
-        reg.setOrder(1);
+        reg.setOrder(-200);
         return reg;
     }
 }
