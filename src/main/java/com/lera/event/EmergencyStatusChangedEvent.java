@@ -5,10 +5,11 @@ import lombok.Getter;
 import org.springframework.context.ApplicationEvent;
 
 @Getter
-public class EmergencyAcceptedEvent extends ApplicationEvent {
+public class EmergencyStatusChangedEvent extends ApplicationEvent {
+
     private final Emergency emergency;
 
-    public EmergencyAcceptedEvent(Object source, Emergency emergency) {
+    public EmergencyStatusChangedEvent(Object source, Emergency emergency) {
         super(source);
         this.emergency = emergency;
     }

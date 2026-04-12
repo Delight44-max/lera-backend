@@ -32,7 +32,7 @@ public class ResponderController {
             @AuthenticationPrincipal User user) {
         requireResponder(user);
         return ResponseEntity.ok(
-            ApiResponse.success(Map.of("profile", responderService.getProfile(user.getId()))));
+                ApiResponse.success(Map.of("profile", responderService.getProfile(user.getId()))));
     }
 
     // PATCH /api/v1/responders/availability
@@ -42,8 +42,8 @@ public class ResponderController {
             @Valid @RequestBody AvailabilityRequest req) {
         requireResponder(user);
         return ResponseEntity.ok(
-            ApiResponse.success(Map.of("profile",
-                responderService.setAvailability(user.getId(), req))));
+                ApiResponse.success(Map.of("profile",
+                        responderService.setAvailability(user.getId(), req))));
     }
 
     // PATCH /api/v1/responders/location
@@ -54,6 +54,6 @@ public class ResponderController {
         requireResponder(user);
         responderService.updateLocation(user.getId(), req);
         return ResponseEntity.ok(
-            ApiResponse.success(Map.of("message", "Location updated")));
+                ApiResponse.success(Map.of("message", "Location updated")));
     }
 }

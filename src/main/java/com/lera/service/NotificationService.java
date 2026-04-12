@@ -71,6 +71,12 @@ public class NotificationService {
     public void markAllAsRead(String userId) {
         notificationRepo.markAllReadByUserId(userId);
     }
+    @Transactional
+    public void delete(String id) {
+        Notification notification = notificationRepo.findById(id)
+                .orElseThrow(() -> AppException.notFound("Notification not found"));
+        notificationRepo.delete(notification);
+    }
 
 
     private void sendFcm(String token, String title, String body, String emergencyId) {

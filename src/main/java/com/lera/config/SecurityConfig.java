@@ -18,6 +18,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.*;
 
 import java.util.List;
@@ -41,6 +42,7 @@ public class SecurityConfig {
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
+                    .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
                 .requestMatchers(HttpMethod.POST,
                     "/api/v1/auth/register",
@@ -49,9 +51,22 @@ public class SecurityConfig {
                         "/api/v1/health"
                 ).permitAll()
 
-                    .requestMatchers(HttpMethod.GET, "/api/v1/health").permitAll()
+                    .requestMatchers(HttpMethod.GET,
+                            "/api/v1/health",
+                            "/manifest.json",
+                            "/favicon.ico").permitAll()
+                    .requestMatchers(HttpMethod.PATCH, "/api/v1/auth/me/fcm-token").authenticated()
 
-                .anyRequest().authenticated()
+                    .requestMatchers(AntPathRequestMatcher.antMatcher(HttpMethod.GET,"/**/*.png"),
+                            AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/**/*.jpg"),
+                            AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/**/*.css"),
+                            AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/**/*.js")
+                    ).permitAll()
+
+
+
+
+                    .anyRequest().authenticated()
             )
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();

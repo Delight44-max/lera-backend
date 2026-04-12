@@ -5,12 +5,14 @@ import com.lera.dto.response.*;
 import com.lera.exception.AppException;
 import com.lera.model.User;
 import com.lera.service.EmergencyService;
+import com.lera.service.NotificationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.*;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -21,6 +23,7 @@ import java.util.Optional;
 public class EmergencyController {
 
     private final EmergencyService emergencyService;
+    private final NotificationService notificationService;
 
     // POST /api/v1/emergencies  — citizen creates emergency
     @PostMapping
@@ -42,12 +45,13 @@ public class EmergencyController {
             @AuthenticationPrincipal User user) {
 
         Optional<EmergencyDto> active = emergencyService.getActive(
-            user.getId(), user.getRole().name());
+                user.getId(), user.getRole().name());
         // Return null emergency if none — frontend handles null gracefully
-        return ResponseEntity.ok(
-            ApiResponse.success(Map.of("emergency",
-                (Object) active.orElse(null))));
+        Map<String, Object> data = new HashMap<>();
+        data.put("emergency", active.orElse(null));
+        return ResponseEntity.ok(ApiResponse.success(data));
     }
+
 
     // GET /api/v1/emergencies/history
     @GetMapping("/history")
@@ -125,4 +129,5 @@ public class EmergencyController {
         EmergencyDto emergency = emergencyService.cancelEmergency(id, user.getId());
         return ResponseEntity.ok(ApiResponse.success(Map.of("emergency", emergency)));
     }
+
 }

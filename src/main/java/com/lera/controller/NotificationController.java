@@ -49,4 +49,11 @@ public class NotificationController {
         return ResponseEntity.ok(ApiResponse.<Void>builder()
             .status("success").message("Notification marked as read").build());
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?>deleteNotification(@PathVariable String id){
+        notificationService.delete(id);
+        return ResponseEntity.ok().build();
+    }
+
 }
