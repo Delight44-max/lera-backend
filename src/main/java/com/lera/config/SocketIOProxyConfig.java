@@ -40,10 +40,12 @@ public class SocketIOProxyConfig {
                     String origin = req.getHeader("Origin");
                     if (origin != null) {
                         res.setHeader("Access-Control-Allow-Origin", origin);
-                        res.setHeader("Access-Control-Allow-Credentials", "true");
-                        res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-                        res.setHeader("Access-Control-Allow-Headers", "*");
+                    } else {
+                        res.setHeader("Access-Control-Allow-Origin", "https://lera-frontend.vercel.app");
                     }
+                    res.setHeader("Access-Control-Allow-Credentials", "true");
+                    res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+                    res.setHeader("Access-Control-Allow-Headers", "*");
                     res.setStatus(HttpServletResponse.SC_OK);
                     return;
                 }
@@ -74,17 +76,21 @@ public class SocketIOProxyConfig {
                     }
                 }
 
-                // ✅ Add CORS headers manually
+                // Write response status first
+                res.setStatus(conn.getResponseCode());
+
+                // ✅ Always add CORS headers regardless of status code
                 String origin = req.getHeader("Origin");
                 if (origin != null) {
                     res.setHeader("Access-Control-Allow-Origin", origin);
-                    res.setHeader("Access-Control-Allow-Credentials", "true");
-                    res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-                    res.setHeader("Access-Control-Allow-Headers", "*");
+                } else {
+                    res.setHeader("Access-Control-Allow-Origin", "https://lera-frontend.vercel.app");
                 }
+                res.setHeader("Access-Control-Allow-Credentials", "true");
+                res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+                res.setHeader("Access-Control-Allow-Headers", "*");
 
-                // Write response (skip CORS headers from Socket.IO — we added our own)
-                res.setStatus(conn.getResponseCode());
+                // Forward response headers (skip CORS — we added our own)
                 conn.getHeaderFields().forEach((key, values) -> {
                     if (key != null &&
                             !key.equalsIgnoreCase("access-control-allow-origin") &&
