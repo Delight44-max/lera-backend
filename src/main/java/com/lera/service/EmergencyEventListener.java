@@ -8,7 +8,9 @@ import com.lera.repository.ResponderProfileRepository;
 import com.lera.socket.SocketIOService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.event.*;
+import org.springframework.context.event.EventListener;
+import org.springframework.transaction.event.TransactionalEventListener;
+import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
@@ -24,9 +26,8 @@ public class EmergencyEventListener {
     private final ResponderProfileRepository responderProfileRepo;
 
     @Async
-    @EventListener
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void onEmergencyCreated(EmergencyCreatedEvent event) {
-
         Emergency emergency = event.getEmergency();
         EmergencyDto dto = EmergencyDto.from(emergency);
 
@@ -65,7 +66,7 @@ public class EmergencyEventListener {
     }
 
     @Async
-    @EventListener
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void onEmergencyStatusChanged(EmergencyStatusChangedEvent event) {
 
         Emergency emergency = event.getEmergency();
@@ -111,7 +112,7 @@ public class EmergencyEventListener {
     }
 
     @Async
-    @EventListener
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void onEmergencyDeclined(EmergencyDeclinedEvent event) {
 
         Emergency emergency = event.getEmergency();
@@ -130,7 +131,7 @@ public class EmergencyEventListener {
     }
 
     @Async
-    @EventListener
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void onEmergencyResolved(EmergencyResolvedEvent event) {
 
         Emergency emergency = event.getEmergency();
@@ -170,7 +171,7 @@ public class EmergencyEventListener {
     }
 
     @Async
-    @EventListener
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void onEmergencyCancelled(EmergencyCancelledEvent event) {
 
         Emergency emergency = event.getEmergency();
