@@ -17,17 +17,13 @@ services:
         value: 900000
       - key: REFRESH_TOKEN_EXPIRATION_MS
         value: 604800000
-      - key: DATABASE_URL
-        fromDatabase:
-          name: lera-db
-          property: connectionString
+      - key: DB_URL
+        value: jdbc:postgresql://neondb_owner:npg_i8HJoyEI9nzZ@ep-bold-paper-a4253nug-pooler.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require
+      - key: DB_USERNAME
+        value: neondb_owner
+      - key: DB_PASSWORD
+        value: npg_i8HJoyEI9nzZ
       - key: CORS_ORIGINS
         value: http://localhost:3000,http://localhost:3001,https://lera-frontend.vercel.app
       - key: FIREBASE_SERVICE_ACCOUNT_JSON
         value: ""
-
-databases:
-  - name: lera-db
-    databaseName: lera_db
-    user: lera_user
-    plan: free
